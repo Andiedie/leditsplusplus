@@ -500,6 +500,7 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
             use_cross_attn_mask: bool = False,
             # Attention store (just for visualization purposes)
             attention_store = None,
+            text_cross_attention_maps = None,
             attn_store_steps: Optional[List[int]] = [],
             store_averaged_over_steps: bool = True,
             use_intersect_mask: bool = False,
@@ -755,10 +756,10 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
             # For classifier free guidance, we need to do two forward passes.
             # Here we concatenate the unconditional and text embeddings into a single batch
             # to avoid doing two forward passes
-            self.text_cross_attention_maps = [org_prompt] if isinstance(org_prompt, str) else org_prompt
+            text_cross_attention_maps = [org_prompt] if isinstance(org_prompt, str) else org_prompt
             if enable_edit_guidance:
                 text_embeddings = torch.cat([uncond_embeddings, text_embeddings, edit_concepts])
-                self.text_cross_attention_maps += \
+                text_cross_attention_maps += \
                     ([editing_prompt] if isinstance(editing_prompt, str) else editing_prompt)
             else:
                 text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
@@ -920,11 +921,11 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
                         if use_cross_attn_mask:
                             out = attention_store.aggregate_attention(
                                 attention_maps=attention_store.step_store,
-                                prompts=self.text_cross_attention_maps,
+                                prompts=text_cross_attention_maps,
                                 res=16,
                                 from_where=["up", "down"],
                                 is_cross=True,
-                                select=self.text_cross_attention_maps.index(editing_prompt[c]),
+                                select=text_cross_attention_maps.index(editing_prompt[c]),
                             )
                             attn_map = out[:, :, :, 1:1 + num_edit_tokens[c]]  # 0 -> startoftext
 
@@ -1105,7 +1106,7 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
         if not return_dict:
             return (image, has_nsfw_concept), attention_store
 
-        return SemanticStableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept),  attention_store
+        return SemanticStableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept),  attention_store, text_cross_attention_maps
 
     def encode_text(self, prompts):
         text_inputs = self.tokenizer(
