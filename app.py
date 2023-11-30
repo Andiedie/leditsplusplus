@@ -348,10 +348,9 @@ def swap_visibilities(input_image,
 
 intro = """
 <div>
-<img src="magician.png" width="100" style="display: inline-block" />
-<h1 style="text-align: center; margin-bottom: 7px; display: inline-block">LEDITS++</h1>
-<h3 style="display: inline-block">Limitless Image Editing using Text-to-Image Models</h3>
-</h1>
+    <img src="https://huggingface.co/spaces/editing-images/leditsplusplus/resolve/main/magician.png" width="100" style="display: inline-block" />
+    <h1 style="margin-left: 10px; text-align: center; margin-bottom: 7px; display: inline-block">LEDITS++</h1>
+    <h3 style="display: inline-block; margin-left:15px">Limitless Image Editing using Text-to-Image Models</h3>
 </div>
 
 <p style="font-size: 0.95rem;margin: 0rem;line-height: 1.2em;margin-top:1em;display: inline-block">
