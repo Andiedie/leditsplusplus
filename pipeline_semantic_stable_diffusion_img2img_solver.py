@@ -601,6 +601,8 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
             second element is a list of `bool`s denoting whether the corresponding generated image likely represents
             "not-safe-for-work" (nsfw) content, according to the `safety_checker`.
         """
+        self.unet.set_attn_processor(AttnProcessor())
+        
         # eta = self.eta
         num_images_per_prompt = 1
         # latents = self.init_latents
