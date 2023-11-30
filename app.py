@@ -347,9 +347,12 @@ def swap_visibilities(input_image,
 
 
 intro = """
-<h1 style="font-weight: 1400; text-align: center; margin-bottom: 7px;">
-   LEDITS++: Limitless Image Editing using Text-to-Image Models
+<div>
+<img src="magician.png" width="100" style="display: inline-block" />
+<h1 style="text-align: center; margin-bottom: 7px; display: inline-block">LEDITS++</h1>
+<h3 style="display: inline-block">Limitless Image Editing using Text-to-Image Models</h3>
 </h1>
+</div>
 
 <p style="font-size: 0.95rem;margin: 0rem;line-height: 1.2em;margin-top:1em;display: inline-block">
     <a href="https://leditsplusplus-project.static.hf.space" target="_blank">project page</a> | <a href="https://arxiv.org/abs/2311.16711" target="_blank">paper</a>
