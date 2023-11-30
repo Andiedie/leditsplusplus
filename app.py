@@ -716,92 +716,113 @@ with gr.Blocks(css="style.css") as demo:
                 src_prompt,
                 src_cfg_scale,
                 mask_type
-
-
         ],
-        outputs=[sega_edited_image, reconstruct_button, do_reconstruction, reconstruction, wts, zs,attention_store, text_cross_attention_maps, do_inversion, share_btn_container])
+        outputs=[sega_edited_image, reconstruct_button, do_reconstruction, reconstruction, wts, zs,attention_store, text_cross_attention_maps, do_inversion, share_btn_container]
+        
+    )
     # .success(fn=update_gallery_display, inputs= [prev_output_image, sega_edited_image], outputs = [gallery, gallery, prev_output_image])
 
 
     input_image.change(
         fn = reset_do_inversion,
         outputs = [do_inversion],
-        queue = False).then(
+        queue=False,
+        concurrency_limit=None
+    ).then(
         fn = randomize_seed_fn,
         inputs = [seed, randomize_seed],
-        outputs = [seed], queue = False)
+        outputs = [seed],
+        queue=False,
+        concurrency_limit=None
+    )
+    
     # Automatically start inverting upon input_image change
-    input_image.upload(fn = crop_image, inputs = [input_image], outputs = [input_image],queue=False).then(
+    input_image.upload(
+        fn = crop_image,
+        inputs = [input_image],
+        outputs = [input_image],
+        queue=False,
+        concurrency_limit=None,
+    ).then(
         fn = reset_do_inversion,
         outputs = [do_inversion],
-        queue = False).then(
+        queue=False,
+        concurrency_limit=None        
+    ).then(
         fn = randomize_seed_fn,
         inputs = [seed, randomize_seed],
-        outputs = [seed], queue = False).then(fn = caption_image,
+        outputs = [seed], 
+        queue=False,
+        concurrency_limit=None        
+    ).then(fn = caption_image,
         inputs = [input_image],
-        outputs = [tar_prompt, image_caption]).then(fn = update_inversion_progress_visibility, inputs =[input_image,do_inversion],
-                            outputs=[inversion_progress],queue=False).then(
-        fn=load_and_invert,
-        inputs=[input_image,
-                do_inversion,
-                seed, randomize_seed,
-                wts, zs,
-                src_prompt,
-                # tar_prompt,
-                steps,
-                src_cfg_scale,
-                skip,
-                tar_cfg_scale,
-        ],
-        # outputs=[ddpm_edited_image, wts, zs, do_inversion],
-        outputs=[wts, zs, do_inversion, inversion_progress],
-    ).then(fn = update_inversion_progress_visibility, inputs =[input_image,do_inversion],
-           outputs=[inversion_progress],queue=False).then(
-              lambda: gr.update(visible=False),
-              outputs=[reconstruct_button]).then(
-        fn = reset_do_reconstruction,
-        outputs = [do_reconstruction],
-        queue = False)
-
+        outputs = [tar_prompt, image_caption],
+        queue=False,
+        concurrency_limit=None        
+    )
 
     # Repeat inversion (and reconstruction) when these params are changed:
     src_prompt.change(
         fn = reset_do_inversion,
-        outputs = [do_inversion], queue = False).then(
+        outputs = [do_inversion],
+        queue = False
+    ).then(
         fn = reset_do_reconstruction,
-        outputs = [do_reconstruction], queue = False)
+        outputs = [do_reconstruction],
+        queue = False
+    )
 
     steps.change(
         fn = reset_do_inversion,
-        outputs = [do_inversion], queue = False).then(
+        outputs = [do_inversion],
+        queue = False
+    ).then(
         fn = reset_do_reconstruction,
-        outputs = [do_reconstruction], queue = False)
-
+        outputs = [do_reconstruction],
+        queue = False
+    )
 
     src_cfg_scale.change(
         fn = reset_do_inversion,
-        outputs = [do_inversion], queue = False).then(
+        outputs = [do_inversion],
+        queue = False
+    ).then(
         fn = reset_do_reconstruction,
-        outputs = [do_reconstruction], queue = False)
+        outputs = [do_reconstruction],
+        queue = False
+    )
 
     # Repeat only reconstruction these params are changed:
-
     tar_prompt.change(
         fn = reset_do_reconstruction,
-        outputs = [do_reconstruction], queue = False)
+        outputs = [do_reconstruction],
+        queue = False
+    )
 
     tar_cfg_scale.change(
         fn = reset_do_reconstruction,
-        outputs = [do_reconstruction], queue = False)
+        outputs = [do_reconstruction],
+        queue = False
+    )
 
     skip.change(
         fn = reset_do_inversion,
-        outputs = [do_inversion], queue = False).then(
+        outputs = [do_inversion],
+        queue = False
+    ).then(
         fn = reset_do_reconstruction,
-        outputs = [do_reconstruction], queue = False)
+        outputs = [do_reconstruction],
+        queue = False
+    )
 
-    seed.change(fn=reset_do_inversion, outputs=[do_inversion], queue=False).then(
-        fn=reset_do_reconstruction, outputs=[do_reconstruction], queue=False
+    seed.change(
+        fn=reset_do_inversion,
+        outputs=[do_inversion],
+        queue=False
+    ).then(
+        fn=reset_do_reconstruction,
+        outputs=[do_reconstruction],
+        queue=False
     )
 
     dropdown1.change(fn=update_dropdown_parms, inputs = [dropdown1], outputs = [guidnace_scale_1,warmup_1,  threshold_1], queue=False)
@@ -878,5 +899,5 @@ with gr.Blocks(css="style.css") as demo:
         cache_examples=True
     )
 
-demo.queue()
+demo.queue(default_concurrency_limit=1)
 demo.launch()
