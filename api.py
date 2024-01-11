@@ -29,10 +29,10 @@ def seed_everything(seed):
 
 class EditData(BaseModel):
     concept: str
-    guidance_scale: float = Field(default=7.5)
+    guidance_scale: float = Field(default=7)
     warmup: int = Field(default=2)
     neg_guidance: bool = Field(default=False)
-    threshold: float = Field(default=0.8)
+    threshold: float = Field(default=0.9)
 
 
 def edit(
@@ -151,7 +151,6 @@ def invoke():
     image = np.array(image)
 
     def progress_callback(p):
-        print(p)
         global_dict['progress'] = p
 
     result = edit(
