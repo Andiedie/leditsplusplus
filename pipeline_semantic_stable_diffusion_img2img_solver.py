@@ -1140,6 +1140,7 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
                eta: float = 1.0,
                generator: Optional[torch.Generator] = None,
                verbose=True,
+               step_callback=None
                ):
         """
         Inverts a real image according to Algorihm 1 in https://arxiv.org/pdf/2304.06140.pdf,
@@ -1203,8 +1204,7 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
         # noise maps
         zs = torch.zeros(size=variance_noise_shape, device=self.device, dtype=uncond_embedding.dtype)
 
-        for t in self.progress_bar(timesteps, verbose=verbose):
-
+        for i, t in enumerate(self.progress_bar(timesteps, verbose=verbose)):
             idx = self.num_inversion_steps-t_to_idx[int(t)]-1
             # 1. predict noise residual
             xt = xts[idx+1]
@@ -1221,6 +1221,9 @@ class SemanticStableDiffusionImg2ImgPipeline_DPMSolver(DiffusionPipeline):
 
             # correction to avoid error accumulation
             xts[idx] = xtm1_corrected
+
+            if step_callback:
+                step_callback(i, None, None)
 
         # TODO: I don't think that the noise map for the last step should be discarded ?!
         # if not zs is None:
