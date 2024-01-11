@@ -127,10 +127,10 @@ def invoke():
     img_data = data['image']
     edit_datas = [
         EditData.model_validate(one)
-        for one in data['edit_datas']
+        for one in data['edits']
     ]
     del data['image']
-    del data['edit_datas']
+    del data['edits']
 
     if img_data.startswith('https://'):
         image = load_image(img_data)
