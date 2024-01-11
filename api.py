@@ -136,7 +136,7 @@ def invoke():
         image = load_image(img_data)
     else:
         img_bytes = base64.b64decode(img_data.encode())
-        image = Image.open(BytesIO(img_bytes))
+        image = Image.open(io.BytesIO(img_bytes))
         image = load_image(image)
 
     image = image.resize((512, 512))
